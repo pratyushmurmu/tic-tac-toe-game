@@ -48,7 +48,7 @@ public class Tictactoe {
                 return "O";
             }
         }
-
+----------------------------------------------------------------------------------------------------------------
         for (int a = 0; a < 9; a++) {
             if (Arrays.asList(board).contains(String.valueOf(a + 1))) {
                 break;
@@ -81,7 +81,7 @@ public class Tictactoe {
         for (int a = 0; a < 9; a++) {
             board[a] = String.valueOf(a + 1);
         }
-
+----------------------------------------------------------------------------------------------------------------
         System.out.println("Welcome to 3x3 Tic Tac Toe.");
         printBoard();
         System.out.println("X will play first. Enter a slot number to place X in:");
@@ -116,7 +116,7 @@ public class Tictactoe {
                 in.nextLine(); // Consume invalid input to prevent infinite loop
             }
         }
-
+----------------------------------------------------------------------------------------------------------------
         // Final result
         if (winner.equalsIgnoreCase("draw")) {
             System.out.println("It's a draw! Thanks for playing.");
