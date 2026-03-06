@@ -29,8 +29,10 @@ Clone the repo:
 
 ```Bash
 git clone https://github.com/pratyushmurmu/tic-tac-toe-game.git
-Open in IntelliJ IDEA (or any Java IDE).
 ```
+
+Open in IntelliJ IDEA (or any Java IDE).
+
 Run Main.java.
 
 Follow the on-screen prompts to play!
