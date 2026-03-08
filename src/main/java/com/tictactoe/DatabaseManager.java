@@ -8,17 +8,30 @@ import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
 import org.bson.Document;
 import java.util.Date;
+import java.io.InputStream;
+import java.util.Properties;
 
 public class DatabaseManager {
-    // Your verified connection string
-    private static final String URI = "mongodb+srv://pratyushmurmu2004_db_user:6Fs5fPEDLcv3K4Ra@cluster0.pp2snak.mongodb.net/?retryWrites=true&w=majority";
+
+    // 1. HELPER METHOD: This pulls the URI from your HIDDEN db.properties file
+    private static String getSecureUri() {
+        Properties props = new Properties();
+        try (InputStream input = DatabaseManager.class.getClassLoader().getResourceAsStream("db.properties")) {
+            if (input == null) {
+                throw new RuntimeException("❌ Could not find db.properties in src/main/resources/");
+            }
+            props.load(input);
+            return props.getProperty("mongodb.uri");
+        } catch (Exception e) {
+            throw new RuntimeException("❌ Error loading secure database credentials", e);
+        }
+    }
 
     public static void saveGameResult(String winnerName) {
-        // Force TLS 1.2 for JDK 24 compatibility
         System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 
-        try (MongoClient mongoClient = MongoClients.create(URI)) {
-            // This will create 'tictactoe_db' and 'scores' collection if they don't exist
+        // 2. USE THE HELPER: No hardcoded password here!
+        try (MongoClient mongoClient = MongoClients.create(getSecureUri())) {
             MongoDatabase database = mongoClient.getDatabase("tictactoe_db");
             MongoCollection<Document> collection = database.getCollection("scores");
 
@@ -32,15 +45,14 @@ public class DatabaseManager {
             System.err.println("❌ Failed to sync to cloud: " + e.getMessage());
         }
     }
+
     public static void showLeaderboard() {
-        // Force TLS 1.2 for JDK 24 compatibility
         System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
 
-        try (MongoClient mongoClient = MongoClients.create(URI)) {
+        try (MongoClient mongoClient = MongoClients.create(getSecureUri())) {
             MongoDatabase database = mongoClient.getDatabase("tictactoe_db");
             MongoCollection<Document> collection = database.getCollection("scores");
 
-            // Use the 'countDocuments' filter to find specific winners
             long xWins = collection.countDocuments(new Document("winner", "X"));
             long oWins = collection.countDocuments(new Document("winner", "O"));
             long draws = collection.countDocuments(new Document("winner", "Draw"));
@@ -59,13 +71,13 @@ public class DatabaseManager {
         System.setProperty("jdk.tls.client.protocols", "TLSv1.2");
         Map<String, Long> stats = new HashMap<>();
 
-        try (com.mongodb.client.MongoClient mongoClient = com.mongodb.client.MongoClients.create(URI)) {
+        try (MongoClient mongoClient = MongoClients.create(getSecureUri())) {
             var db = mongoClient.getDatabase("tictactoe_db");
             var col = db.getCollection("scores");
 
-            stats.put("xWins", col.countDocuments(new org.bson.Document("winner", "X")));
-            stats.put("oWins", col.countDocuments(new org.bson.Document("winner", "O")));
-            stats.put("draws", col.countDocuments(new org.bson.Document("winner", "Draw")));
+            stats.put("xWins", col.countDocuments(new Document("winner", "X")));
+            stats.put("oWins", col.countDocuments(new Document("winner", "O")));
+            stats.put("draws", col.countDocuments(new Document("winner", "Draw")));
         } catch (Exception e) {
             e.printStackTrace();
         }
