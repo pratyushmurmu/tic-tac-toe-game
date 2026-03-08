@@ -5,11 +5,11 @@ Welcome to the Tic-Tac-Toe Engine project! This started as a deep dive into Java
 Currently, the project is a fully functional Java Console Application.
 
 ## Key Features:
-**Robust Game Logic:** A centralized GameLogic class that handles board state, turn management, and win/draw detection.
+**Robust Game Logic:** A centralized com.tictactoe.GameLogic class that handles board state, turn management, and win/draw detection.
 
 **Input Validation:** Uses try-catch blocks and conditional checks to handle InputMismatchException and prevent illegal moves (e.g., choosing a taken slot or a number outside 1-9).
 
-**OOP Foundations:** Built with modularity in mind, separating the "Brain" (GameLogic) from the "Controller" (Main class).
+**OOP Foundations:** Built with modularity in mind, separating the "Brain" (com.tictactoe.GameLogic) from the "Controller" (com.tictactoe.Main class).
 
 **IDE Transition:** Developed using IntelliJ IDEA, leveraging its static analysis to eliminate logic "tangles" and ensure clean code.
 
@@ -33,7 +33,7 @@ git clone https://github.com/pratyushmurmu/tic-tac-toe-game.git
 
 Open in IntelliJ IDEA (or any Java IDE).
 
-Run Main.java.
+Run com.tictactoe.Main.java.
 
 Follow the on-screen prompts to play!
 
