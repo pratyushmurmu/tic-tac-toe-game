@@ -1,8 +1,10 @@
+package com.tictactoe;
+
 import java.util.*;
 
 public class GameLogic {
-    String[] board; // for laying out the board for the game
-    String turn; // for turning between player 'X' and 'O'
+    public String[] board; // for laying out the board for the game
+    public String turn; // for turning between player 'X' and 'O'
 
     public GameLogic() {
         board = new String[9]; // create a 1-D array of 9 spots
