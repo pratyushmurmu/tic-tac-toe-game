@@ -1,3 +1,5 @@
+package com.tictactoe;
+
 import java.util.*;
 
 public class Main {
@@ -9,6 +11,7 @@ public class Main {
         String winner = null; // Variable to track the end state (X, O, or Draw)
 
         System.out.println("Welcome to 3x3 Tic Tac Toe.");
+        DatabaseManager.showLeaderboard(); // --- NEW: Fetch stats from Mumbai Cloud ---
         game.printBoard(); // Showing the starting empty board
         System.out.println("X plays first. Enter slot:");
 
@@ -52,13 +55,20 @@ public class Main {
             }
         }
 
-        // --- Final Result ---
-        // If the loop ends, that means the 'winner' is no longer null
-        if (winner.equalsIgnoreCase("draw")) {
-            System.out.println("It's a draw! Thanks for playing.");
-        } else {
-            System.out.println("Congratulations! " + winner + "'s won!");
+        // --- 3. FINAL RESULT & CLOUD SYNC ---
+        // If the loop ends, the 'winner' variable is now "X", "O", or "draw"
+        if (winner != null) {
+            if (winner.equalsIgnoreCase("draw")) {
+                System.out.println("It's a draw! Thanks for playing.");
+                // Sending the draw result to MongoDB Atlas
+                DatabaseManager.saveGameResult("Draw");
+            } else {
+                System.out.println("Congratulations! " + winner + " has won!");
+                // Sending the winner (X or O) to MongoDB Atlas
+                DatabaseManager.saveGameResult(winner);
+            }
         }
-        in.close(); // Closing the game for saving the system resources.
+
+        in.close(); // Clean up system resources
     }
 }
