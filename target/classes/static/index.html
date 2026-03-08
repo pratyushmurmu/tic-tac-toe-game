@@ -20,5 +20,17 @@
 </div>
 
 <script src="menu.js"></script>
+
+<h1>🏆 Tic-Tac-Toe Cloud Leaderboard</h1>
+<div id="stats">Loading Mumbai Cloud Data...</div>
+
+<script>
+    fetch('/api/stats')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('stats').innerHTML =
+                `X Wins: ${data.xWins} | O Wins: ${data.oWins} | Draws: ${data.draws}`;
+        });
+</script>
 </body>
 </html>

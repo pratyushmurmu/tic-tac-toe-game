@@ -1,4 +1,3 @@
-import  java.util.*;
 // A simple Java program to demonstrate
 // Tic-Tac-Toe Game
 /*
