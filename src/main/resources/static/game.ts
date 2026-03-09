@@ -12,6 +12,24 @@ const winningConditions = [
     [0, 4, 8], [2, 4, 6]
 ];
 
+// --- 1. CLOUD SYNC LOGIC ---
+// Define this outside so any part of your code can use it
+async function saveResultToCloud(winner: string) {
+    try {
+        const response = await fetch('/api/save-result', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ winner: winner })
+        });
+        if (response.ok) {
+            console.log("☁️ Cloud Sync Successful");
+        }
+    } catch (err) {
+        console.error("❌ Cloud Sync Failed", err);
+    }
+}
+
+// --- 2. WIN/DRAW LOGIC ---
 function handleResultValidation() {
     let roundWon = false;
     for (let i = 0; i <= 7; i++) {
@@ -27,36 +45,32 @@ function handleResultValidation() {
     }
 
     if (roundWon) {
-        statusText.innerHTML = `Player <span class="${currentPlayer === 'x-icon' ? 'x-icon' : 'o-icon'}">${currentPlayer}</span> WINS!`;
+        statusText.innerHTML = `Player <span class="${currentPlayer === 'X' ? 'x-icon' : 'o-icon'}">${currentPlayer}</span> WINS!`;
         gameActive = false;
+        saveResultToCloud(currentPlayer); // Trigger Sync
         return;
     }
 
     if (gameState.indexOf("") === -1) {
         statusText.innerHTML = "It's a DRAW!";
         gameActive = false;
+        saveResultToCloud("Draw"); // Trigger Sync
     }
 }
 
-// ONLY ONE LOOP NEEDED
+// --- 3. INPUT HANDLING ---
 cells.forEach(cell => {
     cell.addEventListener('click', () => {
         const clickedCellIndex = parseInt(cell.getAttribute('data-index')!);
 
-        // Guard clause: stop if cell is taken or game over
         if (gameState[clickedCellIndex] !== "" || !gameActive) return;
 
-        // 1. Update Logic
         gameState[clickedCellIndex] = currentPlayer;
-
-        // 2. Update UI
         cell.textContent = currentPlayer;
         cell.classList.add(currentPlayer === "X" ? "x-icon" : "o-icon");
 
-        // 3. Check Win
         handleResultValidation();
 
-        // 4. Switch Player ONLY if no one won yet
         if (gameActive) {
             currentPlayer = currentPlayer === "X" ? "O" : "X";
             statusText.innerHTML = `Player <span class="${currentPlayer === 'X' ? 'x-icon' : 'o-icon'}">${currentPlayer}</span>'s Turn`;
