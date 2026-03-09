@@ -1,12 +1,11 @@
-# Step 1: Build the application
-FROM maven:3.8.5-openjdk-17 AS build
+# Step 1: Build the application using JDK 21
+FROM maven:3.9.6-eclipse-temurin-21 AS build
 COPY . .
-# No WORKDIR needed! pom.xml is in the root.
+# No WORKDIR needed as pom.xml is in the root
 RUN mvn clean package -DskipTests
 
-# Step 2: Run the application
-FROM eclipse-temurin:17-jdk
-# The JAR will be in the standard /target folder
+# Step 2: Run the application using JRE 21
+FROM eclipse-temurin:21-jre
 COPY --from=build /target/*.jar app.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]
