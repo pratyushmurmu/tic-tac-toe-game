@@ -80,3 +80,19 @@ function updateLeaderboard() {
 }
 // 3. Execution: Run the fetch when the menu opens
 updateLeaderboard();
+
+document.addEventListener('DOMContentLoaded', () => {
+    const subtitle = document.querySelector('.menu-container p');
+    const text = subtitle.innerText;
+    subtitle.innerText = '';
+
+    let i = 0;
+    function typeWriter() {
+        if (i < text.length) {
+            subtitle.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typeWriter, 70); // 70ms per character
+        }
+    }
+    typeWriter();
+});
