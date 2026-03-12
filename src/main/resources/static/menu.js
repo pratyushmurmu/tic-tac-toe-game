@@ -167,7 +167,7 @@ function initAudio() {
 function initAudio() {
     audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     // Path is relative to the 'static' folder
-    audio = new Audio('sounds/Electric-Pulse.mp3');
+    audio = new Audio('/sounds/Electric-Pulse.mp3');
     audio.loop = true;
     // ... rest of your visualizer code
 }
