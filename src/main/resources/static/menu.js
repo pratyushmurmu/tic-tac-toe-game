@@ -1,4 +1,4 @@
-// --- 1. BOILERPLATE HELPERS (Keep these at the top) ---
+// --- 1. BOILERPLATE HELPERS ---
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,116 +36,37 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 
-// --- 2. AUDIO & VISUALIZER VARIABLES ---
-let audioCtx;
-let audio;
-let analyser;
-let dataArray;
-
-// --- 3. NAVIGATION & AUDIO LOGIC ---
+// --- 2. NAVIGATION ---
 const playButton = document.getElementById('playBtn');
-
 if (playButton) {
     playButton.addEventListener('click', function () {
-        console.log("Button clicked. Initializing audio...");
-
-        // Start Audio Context on user click (Browser requirement)
-        if (!audioCtx) {
-            initAudio();
-        }
-
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-
-        // Play audio and handle the promise
-        audio.play()
-            .then(() => {
-                console.log("Audio playing successfully!");
-                // Wait 200ms so the user hears the start of the music before page changes
-                setTimeout(() => {
-                    window.location.href = 'game.html';
-                }, 200);
-            })
-            .catch(error => {
-                console.error("Audio playback failed:", error);
-                // Redirect even if audio fails so game isn't broken
-                window.location.href = 'game.html';
-            });
+        // Direct redirect: Fast and reliable for deployment
+        window.location.href = 'game.html';
     });
 }
 
-function initAudio() {
-    console.log("Loading: /Electric-Pulse.mp3");
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    audio = new Audio('/Electric-Pulse.mp3');
-    audio.loop = true;
-    audio.volume = 0.5;
+// --- 3. LEADERBOARD LOGIC ---
+async function updateLeaderboard() {
+    try {
+        const response = await fetch('/api/stats');
+        if (!response.ok) throw new Error("Network response was not ok");
+        const data = await response.json();
 
-    const source = audioCtx.createMediaElementSource(audio);
-    analyser = audioCtx.createAnalyser();
+        const xElement = document.getElementById('xWins');
+        const oElement = document.getElementById('oWins');
+        const drawsElement = document.getElementById('draws');
 
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
-    analyser.fftSize = 256;
-    const bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-
-    function animateVisuals() {
-        if (!analyser) return;
-        analyser.getByteFrequencyData(dataArray);
-
-        let sum = 0;
-        for (let i = 0; i < 5; i++) { sum += dataArray[i]; }
-        let average = sum / 5;
-
-        const intensity = average / 255;
-        const scale = 1 + (intensity * 0.1);
-
-        document.body.style.filter = `brightness(${0.7 + intensity})`;
-        document.body.style.backgroundSize = `${400 * scale}% ${400 * scale}%`;
-
-        requestAnimationFrame(animateVisuals);
+        if (xElement && oElement && drawsElement) {
+            xElement.textContent = data.xWins.toString();
+            oElement.textContent = data.oWins.toString();
+            drawsElement.textContent = data.draws.toString();
+        }
+    } catch (error) {
+        console.error("❌ Stats fetch failed:", error);
     }
-    animateVisuals();
 }
 
-// --- 4. LEADERBOARD LOGIC ---
-function updateLeaderboard() {
-    return __awaiter(this, void 0, void 0, function () {
-        var response, data, xElement, oElement, drawsElement, error_1, statusDiv;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    _a.trys.push([0, 3, , 4]);
-                    return [4 /*yield*/, fetch('/api/stats')];
-                case 1:
-                    response = _a.sent();
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return [4 /*yield*/, response.json()];
-                case 2:
-                    data = _a.sent();
-                    xElement = document.getElementById('xWins');
-                    oElement = document.getElementById('oWins');
-                    drawsElement = document.getElementById('draws');
-                    if (xElement && oElement && drawsElement) {
-                        xElement.textContent = data.xWins.toString();
-                        oElement.textContent = data.oWins.toString();
-                        drawsElement.textContent = data.draws.toString();
-                    }
-                    return [3 /*break*/, 4];
-                case 3:
-                    error_1 = _a.sent();
-                    console.error("❌ Stats fetch failed:", error_1);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
-            }
-        });
-    });
-}
-
-// --- 5. INITIALIZATION ---
+// --- 4. INITIALIZATION ---
 updateLeaderboard();
 
 document.addEventListener('DOMContentLoaded', () => {
