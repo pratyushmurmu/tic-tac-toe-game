@@ -1,3 +1,4 @@
+// --- 1. BOILERPLATE HELPERS (Keep these at the top) ---
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -34,14 +35,83 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-// 1. Navigation: Go to the game
-var playButton = document.getElementById('playBtn');
+
+// --- 2. AUDIO & VISUALIZER VARIABLES ---
+let audioCtx;
+let audio;
+let analyser;
+let dataArray;
+
+// --- 3. NAVIGATION & AUDIO LOGIC ---
+const playButton = document.getElementById('playBtn');
+
 if (playButton) {
     playButton.addEventListener('click', function () {
-        window.location.href = 'game.html';
+        console.log("Button clicked. Initializing audio...");
+
+        // Start Audio Context on user click (Browser requirement)
+        if (!audioCtx) {
+            initAudio();
+        }
+
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        // Play audio and handle the promise
+        audio.play()
+            .then(() => {
+                console.log("Audio playing successfully!");
+                // Wait 200ms so the user hears the start of the music before page changes
+                setTimeout(() => {
+                    window.location.href = 'game.html';
+                }, 200);
+            })
+            .catch(error => {
+                console.error("Audio playback failed:", error);
+                // Redirect even if audio fails so game isn't broken
+                window.location.href = 'game.html';
+            });
     });
 }
-// 2. Leaderboard: Fetch data from your Java Backend
+
+function initAudio() {
+    console.log("Loading: /Electric-Pulse.mp3");
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audio = new Audio('/Electric-Pulse.mp3');
+    audio.loop = true;
+    audio.volume = 0.5;
+
+    const source = audioCtx.createMediaElementSource(audio);
+    analyser = audioCtx.createAnalyser();
+
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    analyser.fftSize = 256;
+    const bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+
+    function animateVisuals() {
+        if (!analyser) return;
+        analyser.getByteFrequencyData(dataArray);
+
+        let sum = 0;
+        for (let i = 0; i < 5; i++) { sum += dataArray[i]; }
+        let average = sum / 5;
+
+        const intensity = average / 255;
+        const scale = 1 + (intensity * 0.1);
+
+        document.body.style.filter = `brightness(${0.7 + intensity})`;
+        document.body.style.backgroundSize = `${400 * scale}% ${400 * scale}%`;
+
+        requestAnimationFrame(animateVisuals);
+    }
+    animateVisuals();
+}
+
+// --- 4. LEADERBOARD LOGIC ---
 function updateLeaderboard() {
     return __awaiter(this, void 0, void 0, function () {
         var response, data, xElement, oElement, drawsElement, error_1, statusDiv;
@@ -52,8 +122,7 @@ function updateLeaderboard() {
                     return [4 /*yield*/, fetch('/api/stats')];
                 case 1:
                     response = _a.sent();
-                    if (!response.ok)
-                        throw new Error("Network response was not ok");
+                    if (!response.ok) throw new Error("Network response was not ok");
                     return [4 /*yield*/, response.json()];
                 case 2:
                     data = _a.sent();
@@ -69,105 +138,29 @@ function updateLeaderboard() {
                 case 3:
                     error_1 = _a.sent();
                     console.error("❌ Stats fetch failed:", error_1);
-                    statusDiv = document.getElementById('leaderboard-container');
-                    if (statusDiv)
-                        statusDiv.innerHTML = "Offline: Showing local data only.";
                     return [3 /*break*/, 4];
                 case 4: return [2 /*return*/];
             }
         });
     });
 }
-// 3. Execution: Run the fetch when the menu opens
+
+// --- 5. INITIALIZATION ---
 updateLeaderboard();
 
 document.addEventListener('DOMContentLoaded', () => {
     const subtitle = document.querySelector('.menu-container p');
-    const text = subtitle.innerText;
-    subtitle.innerText = '';
-
-    let i = 0;
-    function typeWriter() {
-        if (i < text.length) {
-            subtitle.innerHTML += text.charAt(i);
-            i++;
-            setTimeout(typeWriter, 70); // 70ms per character
+    if (subtitle) {
+        const text = subtitle.innerText;
+        subtitle.innerText = '';
+        let i = 0;
+        function typeWriter() {
+            if (i < text.length) {
+                subtitle.innerHTML += text.charAt(i);
+                i++;
+                setTimeout(typeWriter, 70);
+            }
         }
+        typeWriter();
     }
-    typeWriter();
 });
-
-// --- NEW AUDIO & VISUALIZER VARIABLES ---
-let audioCtx;
-let audio;
-let analyser;
-let dataArray;
-
-// 1. Navigation & Audio Start
-var playButton = document.getElementById('playBtn');
-if (playButton) {
-    playButton.addEventListener('click', function () {
-        // AUDIO RESUME FIX: Initialize context on user click
-        if (!audioCtx) {
-            initAudio();
-        }
-
-        if (audioCtx.state === 'suspended') {
-            audioCtx.resume();
-        }
-
-        // Start playing the music
-        audio.play();
-
-        // Redirect after a short delay to let the user hear the start
-        setTimeout(() => {
-            window.location.href = 'game.html';
-        }, 150);
-    });
-}
-
-function initAudio() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    audio = new Audio('sounds/Electric-Pulse.mp3'); // Ensure file is in this path!
-    audio.loop = true;
-    audio.volume = 0.5;
-
-    var source = audioCtx.createMediaElementSource(audio);
-    analyser = audioCtx.createAnalyser();
-
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-
-    analyser.fftSize = 256;
-    var bufferLength = analyser.frequencyBinCount;
-    dataArray = new Uint8Array(bufferLength);
-
-    function animateVisuals() {
-        analyser.getByteFrequencyData(dataArray);
-
-        // Focus on the bass/low-end frequencies for the pulse
-        let sum = 0;
-        for(let i = 0; i < 5; i++) { sum += dataArray[i]; }
-        let average = sum / 5;
-
-        // VISUALIZER EFFECT: Pulse the background brightness and size
-        const intensity = average / 255;
-        const scale = 1 + (intensity * 0.1); // subtle 10% zoom pulse
-
-        document.body.style.filter = `brightness(${0.7 + intensity})`;
-        document.body.style.backgroundSize = `${400 * scale}% ${400 * scale}%`;
-
-        requestAnimationFrame(animateVisuals);
-    }
-    animateVisuals();
-}
-
-// ... Keep your existing __awaiter, __generator, and updateLeaderboard() code below ...
-
-function initAudio() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    // Path is relative to the 'static' folder
-    audio = new Audio('/sounds/Electric-Pulse.mp3');
-    audio.loop = true;
-    // ... rest of your visualizer code
-}
