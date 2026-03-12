@@ -96,3 +96,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     typeWriter();
 });
+
+// --- NEW AUDIO & VISUALIZER VARIABLES ---
+let audioCtx;
+let audio;
+let analyser;
+let dataArray;
+
+// 1. Navigation & Audio Start
+var playButton = document.getElementById('playBtn');
+if (playButton) {
+    playButton.addEventListener('click', function () {
+        // AUDIO RESUME FIX: Initialize context on user click
+        if (!audioCtx) {
+            initAudio();
+        }
+
+        if (audioCtx.state === 'suspended') {
+            audioCtx.resume();
+        }
+
+        // Start playing the music
+        audio.play();
+
+        // Redirect after a short delay to let the user hear the start
+        setTimeout(() => {
+            window.location.href = 'game.html';
+        }, 150);
+    });
+}
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    audio = new Audio('sounds/Electric-Pulse.mp3'); // Ensure file is in this path!
+    audio.loop = true;
+    audio.volume = 0.5;
+
+    var source = audioCtx.createMediaElementSource(audio);
+    analyser = audioCtx.createAnalyser();
+
+    source.connect(analyser);
+    analyser.connect(audioCtx.destination);
+
+    analyser.fftSize = 256;
+    var bufferLength = analyser.frequencyBinCount;
+    dataArray = new Uint8Array(bufferLength);
+
+    function animateVisuals() {
+        analyser.getByteFrequencyData(dataArray);
+
+        // Focus on the bass/low-end frequencies for the pulse
+        let sum = 0;
+        for(let i = 0; i < 5; i++) { sum += dataArray[i]; }
+        let average = sum / 5;
+
+        // VISUALIZER EFFECT: Pulse the background brightness and size
+        const intensity = average / 255;
+        const scale = 1 + (intensity * 0.1); // subtle 10% zoom pulse
+
+        document.body.style.filter = `brightness(${0.7 + intensity})`;
+        document.body.style.backgroundSize = `${400 * scale}% ${400 * scale}%`;
+
+        requestAnimationFrame(animateVisuals);
+    }
+    animateVisuals();
+}
+
+// ... Keep your existing __awaiter, __generator, and updateLeaderboard() code below ...
+
+function initAudio() {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    // Path is relative to the 'static' folder
+    audio = new Audio('sounds/Electric-Pulse-full.mp3');
+    audio.loop = true;
+    // ... rest of your visualizer code
+}
