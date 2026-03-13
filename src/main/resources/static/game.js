@@ -195,3 +195,106 @@ window.onscroll = function() {
 scrollBtn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 });
+
+/* =============================================================================
+   MINIMAX ALGORITHM (Unbeatable AI)
+   ============================================================================= */
+
+// Helper to check winner without ending the actual game
+function checkWinnerForMinimax(board) {
+    for (let i = 0; i < winningConditions.length; i++) {
+        const [a, b, c] = winningConditions[i];
+        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
+            return board[a];
+        }
+    }
+    return null;
+}
+
+function minimax(board, depth, isMaximizing) {
+    const winner = checkWinnerForMinimax(board);
+    if (winner === 'O') return 10 - depth; // AI wins (Maximize)
+    if (winner === 'X') return depth - 10; // Human wins (Minimize)
+    if (board.every(cell => cell !== '')) return 0; // Draw
+
+    if (isMaximizing) {
+        let bestScore = -Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = 'O';
+                let score = minimax(board, depth + 1, false);
+                board[i] = '';
+                bestScore = Math.max(score, bestScore);
+            }
+        }
+        return bestScore;
+    } else {
+        let bestScore = Infinity;
+        for (let i = 0; i < 9; i++) {
+            if (board[i] === '') {
+                board[i] = 'X';
+                let score = minimax(board, depth + 1, true);
+                board[i] = '';
+                bestScore = Math.min(score, bestScore);
+            }
+        }
+        return bestScore;
+    }
+}
+
+function bestMove() {
+    let bestScore = -Infinity;
+    let move;
+    for (let i = 0; i < 9; i++) {
+        if (gameState[i] === '') {
+            gameState[i] = 'O';
+            let score = minimax(gameState, 0, false);
+            gameState[i] = '';
+            if (score > bestScore) {
+                bestScore = score;
+                move = i;
+            }
+        }
+    }
+    return move;
+}
+
+// --- UPDATED INPUT HANDLING WITH AI ---
+cells.forEach(function (cell) {
+    cell.addEventListener('click', function () {
+        var clickedCellIndex = parseInt(cell.getAttribute('data-index'));
+
+        // Only allow move if it's Player X's turn and game is active
+        if (gameState[clickedCellIndex] !== "" || !gameActive || currentPlayer !== "X")
+            return;
+
+        // Player X Move
+        executeMove(clickedCellIndex, "X");
+
+        if (gameActive) {
+            currentPlayer = "O";
+            statusText.innerHTML = "AI is thinking...";
+
+            // Artificial delay to simulate "thinking"
+            setTimeout(() => {
+                const aiMove = bestMove();
+                if (aiMove !== undefined) {
+                    executeMove(aiMove, "O");
+                    if (gameActive) {
+                        currentPlayer = "X";
+                        statusText.innerHTML = `Player <span class="x-icon">X</span>'s Turn`;
+                    }
+                }
+            }, 600); // 600ms delay
+        }
+    });
+});
+
+// Helper function to handle UI and Validation
+function executeMove(index, player) {
+    gameState[index] = player;
+    const cell = cells[index];
+    cell.textContent = player;
+    cell.classList.add(player === "X" ? "x-icon" : "o-icon");
+    handleResultValidation();
+}
