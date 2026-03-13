@@ -200,12 +200,13 @@ scrollBtn.addEventListener("click", () => {
    MINIMAX ALGORITHM (Unbeatable AI)
    ============================================================================= */
 
-// Helper to check winner without ending the actual game
+// --- 1. MINIMAX CORE ---
 function checkWinnerForMinimax(board) {
+    // Check all 8 winning combinations
     for (let i = 0; i < winningConditions.length; i++) {
         const [a, b, c] = winningConditions[i];
         if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-            return board[a];
+            return board[a]; // Returns 'X' or 'O'
         }
     }
     return null;
@@ -213,9 +214,9 @@ function checkWinnerForMinimax(board) {
 
 function minimax(board, depth, isMaximizing) {
     const winner = checkWinnerForMinimax(board);
-    if (winner === 'O') return 10 - depth; // AI wins (Maximize)
-    if (winner === 'X') return depth - 10; // Human wins (Minimize)
-    if (board.every(cell => cell !== '')) return 0; // Draw
+    if (winner === 'O') return 10 - depth;
+    if (winner === 'X') return depth - 10;
+    if (board.every(cell => cell !== '')) return 0;
 
     if (isMaximizing) {
         let bestScore = -Infinity;
@@ -259,12 +260,12 @@ function bestMove() {
     return move;
 }
 
-// --- UPDATED INPUT HANDLING WITH AI ---
+// --- 2. UPDATED INPUT HANDLING ---
 cells.forEach(function (cell) {
     cell.addEventListener('click', function () {
         var clickedCellIndex = parseInt(cell.getAttribute('data-index'));
 
-        // Only allow move if it's Player X's turn and game is active
+        // Block clicks if: Cell is full, Game is over, or it's AI's turn
         if (gameState[clickedCellIndex] !== "" || !gameActive || currentPlayer !== "X")
             return;
 
@@ -275,26 +276,24 @@ cells.forEach(function (cell) {
             currentPlayer = "O";
             statusText.innerHTML = "AI is thinking...";
 
-            // Artificial delay to simulate "thinking"
+            // Wait 600ms then AI moves
             setTimeout(() => {
-                const aiMove = bestMove();
-                if (aiMove !== undefined) {
-                    executeMove(aiMove, "O");
+                const moveIndex = bestMove();
+                if (moveIndex !== undefined) {
+                    executeMove(moveIndex, "O");
                     if (gameActive) {
                         currentPlayer = "X";
                         statusText.innerHTML = `Player <span class="x-icon">X</span>'s Turn`;
                     }
                 }
-            }, 600); // 600ms delay
+            }, 600);
         }
     });
 });
 
-// Helper function to handle UI and Validation
 function executeMove(index, player) {
     gameState[index] = player;
-    const cell = cells[index];
-    cell.textContent = player;
-    cell.classList.add(player === "X" ? "x-icon" : "o-icon");
-    handleResultValidation();
+    cells[index].textContent = player;
+    cells[index].classList.add(player === "X" ? "x-icon" : "o-icon");
+    handleResultValidation(); // This must be your function that checks real wins
 }
