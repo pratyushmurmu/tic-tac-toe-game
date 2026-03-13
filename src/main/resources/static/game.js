@@ -34,6 +34,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+
 var cells = document.querySelectorAll('.cell');
 var statusText = document.getElementById('status');
 var resetBtn = document.getElementById('resetBtn');
@@ -45,8 +46,8 @@ var winningConditions = [
     [0, 3, 6], [1, 4, 7], [2, 5, 8],
     [0, 4, 8], [2, 4, 6]
 ];
+
 // --- 1. CLOUD SYNC LOGIC ---
-// Define this outside so any part of your code can use it
 function saveResultToCloud(winner) {
     return __awaiter(this, void 0, void 0, function () {
         var response, err_1;
@@ -74,34 +75,74 @@ function saveResultToCloud(winner) {
         });
     });
 }
-// --- 2. WIN/DRAW LOGIC ---
+
+// --- 2. WINNING LINE LOGIC ---
+function drawWinLine(combination) {
+    const line = document.getElementById('win-line');
+    if (!line) return;
+
+    const firstCell = cells[combination[0]];
+    const lastCell = cells[combination[2]];
+
+    const rect1 = firstCell.getBoundingClientRect();
+    const rect2 = lastCell.getBoundingClientRect();
+    const gridRect = document.getElementById('grid').getBoundingClientRect();
+
+    const x1 = rect1.left + rect1.width / 2 - gridRect.left;
+    const y1 = rect1.top + rect1.height / 2 - gridRect.top;
+    const x2 = rect2.left + rect2.width / 2 - gridRect.left;
+    const y2 = rect2.top + rect2.height / 2 - gridRect.top;
+
+    const length = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+    const angle = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+
+    line.style.width = `0px`;
+    line.style.display = 'block';
+    line.style.left = `${x1}px`;
+    line.style.top = `${y1}px`;
+    line.style.transform = `rotate(${angle}deg)`;
+
+    setTimeout(() => {
+        line.style.width = `${length}px`;
+    }, 10);
+}
+
+// --- 3. WIN/DRAW LOGIC ---
 function handleResultValidation() {
     var roundWon = false;
+    var winningCombo = null;
+
     for (var i = 0; i <= 7; i++) {
         var winCondition = winningConditions[i];
         var a = gameState[winCondition[0]];
         var b = gameState[winCondition[1]];
         var c = gameState[winCondition[2]];
-        if (a === '' || b === '' || c === '')
-            continue;
+
+        if (a === '' || b === '' || c === '') continue;
+
         if (a === b && b === c) {
             roundWon = true;
+            winningCombo = winCondition; // Capture the combination
             break;
         }
     }
+
     if (roundWon) {
         statusText.innerHTML = "Player <span class=\"".concat(currentPlayer === 'X' ? 'x-icon' : 'o-icon', "\">").concat(currentPlayer, "</span> WINS!");
         gameActive = false;
-        saveResultToCloud(currentPlayer); // Trigger Sync
+        drawWinLine(winningCombo); // Draw the line!
+        saveResultToCloud(currentPlayer);
         return;
     }
+
     if (gameState.indexOf("") === -1) {
         statusText.innerHTML = "It's a DRAW!";
         gameActive = false;
-        saveResultToCloud("Draw"); // Trigger Sync
+        saveResultToCloud("Draw");
     }
 }
-// --- 3. INPUT HANDLING ---
+
+// --- 4. INPUT HANDLING ---
 cells.forEach(function (cell) {
     cell.addEventListener('click', function () {
         var clickedCellIndex = parseInt(cell.getAttribute('data-index'));
@@ -117,4 +158,5 @@ cells.forEach(function (cell) {
         }
     });
 });
+
 resetBtn.addEventListener('click', function () { location.reload(); });

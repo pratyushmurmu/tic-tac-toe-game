@@ -179,3 +179,22 @@ body::before {
     background-size: 100% 4px, 3px 100%;
     pointer-events: none;
 }
+/* =============================================================================
+   7. WIN LINE
+   ============================================================================= */
+   .grid-wrapper {
+       position: relative; /* So the line stays on top of the grid */
+       display: inline-block;
+   }
+
+   .win-line {
+       position: absolute;
+       background-color: #ff4d4d; /* Matches your 'O' neon color */
+       box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff4d4d;
+       height: 6px;
+       border-radius: 10px;
+       display: none; /* Hidden until someone wins */
+       transform-origin: left center;
+       z-index: 10;
+       transition: width 0.5s ease-out; /* Animates the line "drawing" across */
+   }
