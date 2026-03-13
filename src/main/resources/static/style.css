@@ -3,12 +3,19 @@
    ========================================================================== */
 body {
     margin: 0;
-    height: 100vh;
-    overflow: hidden;
+    min-height: 100vh;
+    /* Changed from justify-content: center to flex-start fro better scrolling*/
+
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
+
+    /* Ensure scrolling is active*/
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 40px 10px; /* Gives space so that the grid isn't glued to the top*/
 
     font-family: 'Arial', sans-serif;
     color: white;
@@ -88,10 +95,10 @@ h1, p {
 
 .grid {
     display: grid;
-    grid-template-columns: repeat(3, 120px);
-    grid-template-rows: repeat(3, 120px);
+    /* This ensures cells never get too big for mobile but look good on desktop*/
+    grid-template-columns: repeat(3, clamp(70px, 20vw, 120px));
+    grid-template-rows: repeat(3, clamp(70px, 20vw, 120px));
     gap: 15px;
-    margin-bottom: 30px;
 }
 
 .cell {
