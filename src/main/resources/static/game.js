@@ -160,3 +160,38 @@ cells.forEach(function (cell) {
 });
 
 resetBtn.addEventListener('click', function () { location.reload(); });
+
+// --- 5. CUSTOM CURSOR & SCROLL LOGIC ---
+
+const dot = document.getElementById("cursor-dot");
+const outline = document.getElementById("cursor-outline");
+const scrollBtn = document.getElementById("scrollTopBtn");
+
+// Move Cursor
+window.addEventListener("mousemove", (e) => {
+    const posX = e.clientX;
+    const posY = e.clientY;
+
+    dot.style.left = `${posX}px`;
+    dot.style.top = `${posY}px`;
+
+    // Outline follows with a slight delay for a "trail" effect
+    outline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+    }, { duration: 500, fill: "forwards" });
+});
+
+// Handle Scroll Button visibility
+window.onscroll = function() {
+    if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+        scrollBtn.style.display = "block";
+    } else {
+        scrollBtn.style.display = "none";
+    }
+};
+
+// Scroll to top function
+scrollBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+});
