@@ -210,7 +210,7 @@ body::before {
       8. CUSTOM NEON CURSOR & TRAIL
       ============================================================================= */
 /* Hide the default browser cursor everywhere */
-html, body, .menu-container, .game-container, button, .cell, a {
+html, body, button, .cell, .play-button {
     cursor: none !important;
 }
 
@@ -229,14 +229,14 @@ html, body, .menu-container, .game-container, button, .cell, a {
 
     /* Ensure visibility */
     display: block !important;
-    opacity: 1;
+    opacity: 1 !important;
 }
 
 .cursor-dot {
     width: 8px;
     height: 8px;
     background-color: #00d2ff;
-    box-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff;
+    box-shadow: 0 0 10px #00d2ff;
 }
 
 .cursor-outline {
@@ -244,8 +244,6 @@ html, body, .menu-container, .game-container, button, .cell, a {
     height: 30px;
     border: 2px solid #ff4d4d;
     box-shadow: 0 0 15px #ff4d4d;
-    /* Smooth movement effect */
-    transition: transform 0.15s ease-out;
 }
 
    /* =============================================================================
