@@ -250,7 +250,7 @@ html, body, button, .cell, .play-button {
    9. SCROLL TO TOP INDICATOR
    ============================================================================= */
 #scrollTopBtn {
-    display: none;
+    display: block !important; /* Forces it to stay visible*/
     position: fixed;
     bottom: 20px;
     right: 20px;
