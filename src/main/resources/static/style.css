@@ -209,42 +209,43 @@ body::before {
    /* =============================================================================
       8. CUSTOM NEON CURSOR & TRAIL
       ============================================================================= */
-   .cursor-dot,
-   .cursor-outline {
-       pointer-events: none;
-       position: fixed;
-       top: 0;
-       left: 0;
-       transform: translate(-50%, -50%);
-       border-radius: 50%;
-       z-index: 10000; /* Above the scanlines */
-       transition: opacity 0.3s ease-in-out, transform 0.1s ease-out;
-   }
+/* Hide the default browser cursor globally */
+html, body, button, .cell, .play-button {
+    cursor: none !important;
+}
 
-   .cursor-dot {
-       width: 8px;
-       height: 8px;
-       background-color: #00d2ff; /* Player X Blue */
-       box-shadow: 0 0 10px #00d2ff;
-   }
+.cursor-dot,
+.cursor-outline {
+    pointer-events: none; /* CRITICAL: Allows clicking through the custom cursor */
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
 
-   .cursor-outline {
-       width: 30px;
-       height: 30px;
-       border: 2px solid #ff4d4d; /* Player O Red */
-       box-shadow: 0 0 15px #ff4d4d;
-       transition: all 0.2s ease-out;
-   }
+    /* Increased z-index to ensure it sits above everything, including scanlines */
+    z-index: 100000;
 
-   /* Hide real cursor for that immersive feel */
-   body {
-       cursor: none;
-   }
+    /* Ensure visibility */
+    opacity: 1;
+    visibility: visible;
+}
 
-   /* Show regular cursor for buttons so users can click accurately */
-   button, .cell {
-       cursor: none;
-   }
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: #00d2ff;
+    box-shadow: 0 0 10px #00d2ff, 0 0 20px #00d2ff;
+}
+
+.cursor-outline {
+    width: 30px;
+    height: 30px;
+    border: 2px solid #ff4d4d;
+    box-shadow: 0 0 15px #ff4d4d;
+    /* Smooth movement */
+    transition: transform 0.15s ease-out;
+}
 
    /* =============================================================================
       9. SCROLL TO TOP INDICATOR
