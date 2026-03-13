@@ -4,18 +4,16 @@
 body {
     margin: 0;
     min-height: 100vh;
-    /* Changed from justify-content: center to flex-start fro better scrolling*/
-
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     align-items: center;
 
-    /* Ensure scrolling is active*/
+    /* Ensure scrolling is active */
     overflow-y: auto;
     overflow-x: hidden;
 
-    padding: 40px 10px; /* Gives space so that the grid isn't glued to the top*/
+    padding: 40px 10px;
 
     font-family: 'Arial', sans-serif;
     color: white;
@@ -25,8 +23,6 @@ body {
     background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #121212);
     background-size: 400% 400%;
     animation: gradientBG 15s ease infinite;
-
-    /* AUDIO TRANSITION REMOVED: Background is now stable for better performance */
 }
 
 h1, p {
@@ -75,7 +71,6 @@ h1, p {
     animation-timing-function: step-end;
 }
 
-/* Neon Styles for Logo Icons */
 .x-icon {
     color: #00d2ff;
     text-shadow: 0 0 5px #00d2ff, 0 0 10px #00d2ff, 0 0 20px #00d2ff, 0 0 40px #00d2ff;
@@ -90,20 +85,23 @@ h1, p {
    4. GAME GRID & CELLS
    ========================================================================== */
 .game-container {
+    display: flex;
+    flex-direction: column; /* FORCES elements to stack vertically */
+    align-items: center;
+    justify-content: flex-start;
+    gap: 25px; /* Adds consistent vertical spacing */
+    width: 100%;
     text-align: center;
 }
 
 .grid {
     display: grid;
-    /* This ensures cells never get too big for mobile but look good on desktop*/
     grid-template-columns: repeat(3, clamp(70px, 20vw, 120px));
     grid-template-rows: repeat(3, clamp(70px, 20vw, 120px));
     gap: 15px;
 }
 
 .cell {
-    width: 120px;
-    height: 120px;
     background-color: rgba(44, 62, 80, 0.7);
     border: 2px solid #34495e;
     display: flex;
@@ -122,7 +120,6 @@ h1, p {
     transform: scale(1.02);
 }
 
-/* Marker-specific animations */
 .cell.x {
     color: #00d2ff;
     text-shadow: 0 0 10px #00d2ff;
@@ -138,6 +135,14 @@ h1, p {
 /* ==========================================================================
    5. BUTTONS & UI ELEMENTS
    ========================================================================== */
+/* Ensure the UI controls container doesn't let buttons float sideways */
+.ui-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
 .play-button, .reseTbtn {
     background-color: transparent;
     color: #2ecc71;
@@ -186,48 +191,43 @@ body::before {
     background-size: 100% 4px, 3px 100%;
     pointer-events: none;
 }
+
 /* =============================================================================
    7. WIN LINE
    ============================================================================= */
-   .grid-wrapper {
-       position: relative; /* So the line stays on top of the grid */
-       display: inline-block;
-   }
+.grid-wrapper {
+    position: relative;
+    display: inline-block;
+}
 
-   .win-line {
-       position: absolute;
-       background-color: #ff4d4d; /* Matches your 'O' neon color */
-       box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff4d4d;
-       height: 6px;
-       border-radius: 10px;
-       display: none; /* Hidden until someone wins */
-       transform-origin: left center;
-       z-index: 10;
-       transition: width 0.5s ease-out; /* Animates the line "drawing" across */
-   }
+.win-line {
+    position: absolute;
+    background-color: #ff4d4d;
+    box-shadow: 0 0 10px #ff4d4d, 0 0 20px #ff4d4d;
+    height: 6px;
+    border-radius: 10px;
+    display: none;
+    transform-origin: left center;
+    z-index: 10;
+    transition: width 0.5s ease-out;
+}
 
-   /* =============================================================================
-      8. CUSTOM NEON CURSOR & TRAIL
-      ============================================================================= */
-/* Hide the default browser cursor everywhere */
+/* =============================================================================
+   8. CUSTOM NEON CURSOR & TRAIL
+   ============================================================================= */
 html, body, button, .cell, .play-button {
     cursor: none !important;
 }
 
-/* Style the custom cursor elements */
 .cursor-dot,
 .cursor-outline {
-    pointer-events: none; /* CRITICAL: Allows clicking through the custom cursor */
+    pointer-events: none;
     position: fixed;
     top: 0;
     left: 0;
     transform: translate(-50%, -50%);
     border-radius: 50%;
-
-    /* Increased z-index extremely high to stay above background & buttons */
     z-index: 999999;
-
-    /* Ensure visibility */
     display: block !important;
     opacity: 1 !important;
 }
@@ -246,28 +246,28 @@ html, body, button, .cell, .play-button {
     box-shadow: 0 0 15px #ff4d4d;
 }
 
-   /* =============================================================================
-      9. SCROLL TO TOP INDICATOR
-      ============================================================================= */
-   #scrollTopBtn {
-       display: none; /* Hidden by default */
-       position: fixed;
-       bottom: 20px;
-       right: 20px;
-       z-index: 99;
-       background-color: rgba(46, 204, 113, 0.2);
-       color: #2ecc71;
-       border: 2px solid #2ecc71;
-       cursor: none; /* Use custom cursor instead */
-       padding: 10px 15px;
-       border-radius: 10px;
-       font-size: 18px;
-       backdrop-filter: blur(5px);
-       transition: all 0.3s;
-   }
+/* =============================================================================
+   9. SCROLL TO TOP INDICATOR
+   ============================================================================= */
+#scrollTopBtn {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 99;
+    background-color: rgba(46, 204, 113, 0.2);
+    color: #2ecc71;
+    border: 2px solid #2ecc71;
+    cursor: none;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 18px;
+    backdrop-filter: blur(5px);
+    transition: all 0.3s;
+}
 
-   #scrollTopBtn:hover {
-       background-color: #2ecc71;
-       color: #121212;
-       box-shadow: 0 0 20px #2ecc71;
-   }
+#scrollTopBtn:hover {
+    background-color: #2ecc71;
+    color: #121212;
+    box-shadow: 0 0 20px #2ecc71;
+}
