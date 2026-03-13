@@ -209,11 +209,12 @@ body::before {
    /* =============================================================================
       8. CUSTOM NEON CURSOR & TRAIL
       ============================================================================= */
-/* Hide the default browser cursor globally */
-html, body, button, .cell, .play-button {
+/* Hide the default browser cursor everywhere */
+html, body, .menu-container, .game-container, button, .cell, a {
     cursor: none !important;
 }
 
+/* Style the custom cursor elements */
 .cursor-dot,
 .cursor-outline {
     pointer-events: none; /* CRITICAL: Allows clicking through the custom cursor */
@@ -223,12 +224,12 @@ html, body, button, .cell, .play-button {
     transform: translate(-50%, -50%);
     border-radius: 50%;
 
-    /* Increased z-index to ensure it sits above everything, including scanlines */
-    z-index: 100000;
+    /* Increased z-index extremely high to stay above background & buttons */
+    z-index: 999999;
 
     /* Ensure visibility */
+    display: block !important;
     opacity: 1;
-    visibility: visible;
 }
 
 .cursor-dot {
@@ -243,7 +244,7 @@ html, body, button, .cell, .play-button {
     height: 30px;
     border: 2px solid #ff4d4d;
     box-shadow: 0 0 15px #ff4d4d;
-    /* Smooth movement */
+    /* Smooth movement effect */
     transition: transform 0.15s ease-out;
 }
 
