@@ -40,7 +40,7 @@ This project served as a practical exploration of:
 4.  **UX Polish:** Balancing "instant" AI logic with human-centric "thinking" delays.
 
 ## 🕹️ How to Play
-1.  Visit the [Live Demo](https://your-link-here.com) (Update with your actual link).
+1.  Visit the [Live Demo](https://tic-tac-toe-game-x54a.onrender.com) (Play here).
 2.  As **Player X**, make your move on the 3x3 grid.
 3.  Attempt to outsmart the **Minimax AI** (Spoiler: It's impossible!).
 
